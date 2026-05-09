@@ -56,11 +56,17 @@ class MingImageGenExecutor(Executor):
         device: str = "cuda",
         conditioner=None,  # SemanticConditioner instance (or None for text-only)
         skip_semantic_encoder: bool = False,
+        gpu_id: int = 0,
+        sp_size: int = 1,
+        sp_gpu_id_step: int = 1,
     ):
         self._model_path = model_path
         self._dit_type = dit_type
         self._dit_model_path = dit_model_path or model_path
         self._device = device
+        self._gpu_id = gpu_id
+        self._sp_size = max(int(sp_size), 1)
+        self._sp_gpu_id_step = int(sp_gpu_id_step)
         self._conditioner = conditioner
         self._skip_semantic_encoder = skip_semantic_encoder
 
@@ -68,6 +74,9 @@ class MingImageGenExecutor(Executor):
         self._thinker_tokenizer = None
         self._results: asyncio.Queue[StagePayload] = asyncio.Queue()
         self._aborted: set[str] = set()
+        # SP follower processes spawned during _load_models (leader-only).
+        self._sp_followers: list = []
+        self._sp_nccl_port: int | None = None
 
     async def start(self) -> None:
         """Load diffusion models and thinker tokenizer."""
@@ -81,17 +90,55 @@ class MingImageGenExecutor(Executor):
         logger.info("[IMG_GEN] Backend loaded and ready")
 
     def _load_models(self) -> None:
-        """Load diffusion backend + thinker tokenizer (runs in thread pool)."""
+        """Load diffusion backend + thinker tokenizer (runs in thread pool).
+
+        For ``sp_size > 1`` (Z-Image only), followers must be spawned BEFORE
+        the leader's load_models — init_process_group is collective.
+        """
         t0 = time.time()
         self._backend = _create_backend(self._dit_type)
 
+        sp_kwargs: dict = {}
+        if self._sp_size > 1:
+            if self._dit_type != "zimage":
+                raise ValueError(
+                    f"sp_size>1 is only supported for dit_type='zimage', "
+                    f"got {self._dit_type!r}"
+                )
+            from sglang_omni.models.ming_omni.diffusion.sp_follower import (
+                _resolve_nccl_port,
+                spawn_sp_followers,
+            )
+
+            self._sp_nccl_port = _resolve_nccl_port()
+            self._sp_followers = spawn_sp_followers(
+                sp_size=self._sp_size,
+                base_gpu_id=self._gpu_id,
+                model_path=self._dit_model_path,
+                nccl_port=self._sp_nccl_port,
+                gpu_id_step=self._sp_gpu_id_step,
+                skip_semantic_encoder=self._skip_semantic_encoder,
+            )
+            sp_kwargs = {
+                "sp_size": self._sp_size,
+                "sp_rank": 0,
+                "nccl_port": self._sp_nccl_port,
+            }
+            logger.info(
+                "[IMG_GEN] Spawned %d SP follower(s) (base_gpu=%d, nccl_port=%d)",
+                len(self._sp_followers),
+                self._gpu_id,
+                self._sp_nccl_port,
+            )
+
         # skip_semantic_encoder is only supported by ZImageBackend.  Other
         # backends (e.g. SD3) use a simpler load_models(path, device) API.
-        if self._dit_type == "zimage" and self._skip_semantic_encoder:
+        if self._dit_type == "zimage":
             self._backend.load_models(
                 self._dit_model_path,
                 torch.device(self._device),
-                skip_semantic_encoder=True,
+                skip_semantic_encoder=self._skip_semantic_encoder,
+                **sp_kwargs,
             )
         else:
             self._backend.load_models(self._dit_model_path, torch.device(self._device))
@@ -263,9 +310,26 @@ class MingImageGenExecutor(Executor):
         self._aborted.add(request_id)
 
     async def stop(self) -> None:
+        # Poison-pill SP followers BEFORE unload (broadcast needs the group).
+        if self._backend is not None and hasattr(self._backend, "sp_shutdown"):
+            try:
+                self._backend.sp_shutdown()
+            except Exception as exc:
+                logger.warning("[IMG_GEN] sp_shutdown failed: %s", exc)
+
         if self._backend is not None:
             self._backend.unload()
             self._backend = None
+
+        for proc in self._sp_followers:
+            proc.join(timeout=10.0)
+            if proc.is_alive():
+                logger.warning(
+                    "[IMG_GEN] SP follower pid=%d did not exit cleanly; terminating",
+                    proc.pid,
+                )
+                proc.terminate()
+        self._sp_followers = []
 
     def _extract_input(self, payload: StagePayload) -> tuple[str, ImageGenParams]:
         """Extract text prompt and image generation params from payload."""

@@ -409,11 +409,21 @@ def create_image_gen_executor(
     device: str = "cuda",
     conditioner=None,
     skip_semantic_encoder: bool = False,
+    gpu_id: int = 0,
+    sp_size: int = 1,
+    sp_gpu_id_step: int = 1,
 ) -> MingImageGenExecutor:
     """Create the Ming image generation executor.
 
     The executor is a self-contained diffusion pipeline (text encoder + DiT + VAE),
     wrapped as an Executor for the pipeline.
+
+    Args:
+        sp_size: Z-Image sequence-parallel degree (Ulysses). > 1 spawns
+            ``sp_size - 1`` follower processes; only ``zimage`` supports it.
+        sp_gpu_id_step: Stride for follower GPU placement starting from
+            ``gpu_id``. Use a negative value to place followers on
+            lower-indexed GPUs.
     """
     local_path = _resolve_local_model_path(model_path)
     return MingImageGenExecutor(
@@ -423,6 +433,9 @@ def create_image_gen_executor(
         device=device,
         conditioner=conditioner,
         skip_semantic_encoder=skip_semantic_encoder,
+        gpu_id=gpu_id,
+        sp_size=sp_size,
+        sp_gpu_id_step=sp_gpu_id_step,
     )
 
 

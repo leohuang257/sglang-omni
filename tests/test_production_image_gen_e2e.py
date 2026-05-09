@@ -44,6 +44,10 @@ MODEL_PATH = os.environ.get(
 TP_SIZE = int(os.environ.get("TP_SIZE", "4"))
 THINKER_GPU = int(os.environ.get("THINKER_GPU", "1"))
 DIFFUSION_GPU = os.environ.get("DIFFUSION_GPU", "cuda:5")
+DIFFUSION_SP_SIZE = int(os.environ.get("DIFFUSION_SP_SIZE", "1"))
+DIFFUSION_SP_STEP = int(os.environ.get("DIFFUSION_SP_STEP", "1"))
+IMAGE_HEIGHT = int(os.environ.get("IMAGE_HEIGHT", "1024"))
+IMAGE_WIDTH = int(os.environ.get("IMAGE_WIDTH", "1024"))
 OUTPUT_DIR = "/tmp/production_image_gen_e2e"
 
 
@@ -68,10 +72,37 @@ def main():
     parser.add_argument("--tp-size", type=int, default=None)
     parser.add_argument("--thinker-gpu", type=int, default=None)
     parser.add_argument("--diffusion-gpu", type=str, default=None)
+    parser.add_argument(
+        "--diffusion-sp-size",
+        type=int,
+        default=None,
+        help="Z-Image SP degree; >1 routes Phase 7-8 through ZImageBackend "
+        "and spawns sp_size-1 followers. Default: 1.",
+    )
+    parser.add_argument(
+        "--diffusion-sp-step",
+        type=int,
+        default=None,
+        help="Stride for follower GPU placement (e.g. -1 lands on lower-"
+        "indexed GPUs). Default: +1.",
+    )
+    parser.add_argument(
+        "--image-height",
+        type=int,
+        default=None,
+        help="Image height (multiple of 16: VAE 8x x patch 2). Default: 1024.",
+    )
+    parser.add_argument(
+        "--image-width",
+        type=int,
+        default=None,
+        help="Image width (multiple of 16). Default: 1024.",
+    )
     parser.add_argument("--output-dir", type=str, default=None)
     args = parser.parse_args()
 
     global MODEL_PATH, TP_SIZE, THINKER_GPU, DIFFUSION_GPU, OUTPUT_DIR
+    global DIFFUSION_SP_SIZE, DIFFUSION_SP_STEP, IMAGE_HEIGHT, IMAGE_WIDTH
     if args.model_path:
         MODEL_PATH = args.model_path
     if args.tp_size:
@@ -80,6 +111,14 @@ def main():
         THINKER_GPU = args.thinker_gpu
     if args.diffusion_gpu:
         DIFFUSION_GPU = args.diffusion_gpu
+    if args.diffusion_sp_size is not None:
+        DIFFUSION_SP_SIZE = args.diffusion_sp_size
+    if args.diffusion_sp_step is not None:
+        DIFFUSION_SP_STEP = args.diffusion_sp_step
+    if args.image_height is not None:
+        IMAGE_HEIGHT = args.image_height
+    if args.image_width is not None:
+        IMAGE_WIDTH = args.image_width
     if args.output_dir:
         OUTPUT_DIR = args.output_dir
 
@@ -141,8 +180,8 @@ async def _run_test(prompts: list[str]):
                     {"role": "user", "content": prompt},
                 ],
                 "image_generation": {
-                    "width": 1024,
-                    "height": 1024,
+                    "width": IMAGE_WIDTH,
+                    "height": IMAGE_HEIGHT,
                     "num_inference_steps": 28,
                     "guidance_scale": 2.0,
                 },
@@ -371,86 +410,172 @@ async def _run_test(prompts: list[str]):
     # ==================================================================
     # Phase 7: Load ZImage pipeline and generate images
     # ==================================================================
-    logger.info("=== Phase 7: Loading ZImage pipeline on %s ===", DIFFUSION_GPU)
-    from diffusers import (
-        AutoencoderKL,
-        FlowMatchEulerDiscreteScheduler,
-        ZImagePipeline,
-        ZImageTransformer2DModel,
-    )
+    sp_size = DIFFUSION_SP_SIZE
+    sp_followers: list = []
+    backend = None
 
-    t0 = time.time()
-    scheduler = FlowMatchEulerDiscreteScheduler.from_pretrained(
-        MODEL_PATH, subfolder="scheduler"
-    )
-    scheduler.config["use_dynamic_shifting"] = True
+    if sp_size > 1:
+        logger.info(
+            "=== Phase 7: Loading ZImageBackend with SP=%d on %s (step=%+d) ===",
+            sp_size,
+            DIFFUSION_GPU,
+            DIFFUSION_SP_STEP,
+        )
+        from sglang_omni.models.ming_omni.diffusion.sp_follower import (
+            _resolve_nccl_port,
+            spawn_sp_followers,
+        )
+        from sglang_omni.models.ming_omni.diffusion.zimage_backend import ZImageBackend
 
-    vae = AutoencoderKL.from_pretrained(
-        MODEL_PATH, subfolder="vae", torch_dtype=torch.bfloat16
-    )
-    transformer = ZImageTransformer2DModel.from_pretrained(
-        MODEL_PATH, subfolder="transformer", torch_dtype=torch.bfloat16
-    )
-    pipe = ZImagePipeline(
-        scheduler=scheduler,
-        vae=vae,
-        transformer=transformer,
-        text_encoder=None,
-        tokenizer=None,
-    ).to(diffusion_device)
-    zimage_load_time = time.time() - t0
-    logger.info("ZImage pipeline loaded in %.1fs", zimage_load_time)
+        leader_gpu = diffusion_device.index
+        if leader_gpu is None:
+            raise ValueError(
+                f"--diffusion-gpu must include a device index when SP>1, "
+                f"got {DIFFUSION_GPU!r}"
+            )
+
+        nccl_port = _resolve_nccl_port()
+        logger.info(
+            "  Spawning %d SP follower(s), nccl_port=%d", sp_size - 1, nccl_port
+        )
+        sp_followers = spawn_sp_followers(
+            sp_size=sp_size,
+            base_gpu_id=leader_gpu,
+            model_path=MODEL_PATH,
+            nccl_port=nccl_port,
+            gpu_id_step=DIFFUSION_SP_STEP,
+            skip_semantic_encoder=True,
+        )
+
+        t0 = time.time()
+        backend = ZImageBackend()
+        backend.load_models(
+            MODEL_PATH,
+            diffusion_device,
+            skip_semantic_encoder=True,
+            sp_size=sp_size,
+            sp_rank=0,
+            nccl_port=nccl_port,
+        )
+        zimage_load_time = time.time() - t0
+        logger.info("ZImageBackend (SP=%d) loaded in %.1fs", sp_size, zimage_load_time)
+    else:
+        logger.info("=== Phase 7: Loading ZImage pipeline on %s ===", DIFFUSION_GPU)
+        from diffusers import (
+            AutoencoderKL,
+            FlowMatchEulerDiscreteScheduler,
+            ZImagePipeline,
+            ZImageTransformer2DModel,
+        )
+
+        t0 = time.time()
+        scheduler = FlowMatchEulerDiscreteScheduler.from_pretrained(
+            MODEL_PATH, subfolder="scheduler"
+        )
+        scheduler.config["use_dynamic_shifting"] = True
+
+        vae = AutoencoderKL.from_pretrained(
+            MODEL_PATH, subfolder="vae", torch_dtype=torch.bfloat16
+        )
+        transformer = ZImageTransformer2DModel.from_pretrained(
+            MODEL_PATH, subfolder="transformer", torch_dtype=torch.bfloat16
+        )
+        pipe = ZImagePipeline(
+            scheduler=scheduler,
+            vae=vae,
+            transformer=transformer,
+            text_encoder=None,
+            tokenizer=None,
+        ).to(diffusion_device)
+        zimage_load_time = time.time() - t0
+        logger.info("ZImage pipeline loaded in %.1fs", zimage_load_time)
 
     # ==================================================================
     # Phase 8: Generate images
     # ==================================================================
     logger.info("=== Phase 8: Generating images ===")
     results = []
-    for i, prompt in enumerate(prompts):
-        pos_emb = condition_embeds_list[i].to(diffusion_device)
-        neg_emb = pos_emb * 0.0
+    try:
+        for i, prompt in enumerate(prompts):
+            pos_emb = condition_embeds_list[i].to(diffusion_device)
+            neg_emb = pos_emb * 0.0
 
-        logger.info("Generating image %d: %r", i, prompt[:60])
-        t0 = time.time()
+            logger.info("Generating image %d: %r", i, prompt[:60])
+            t0 = time.time()
 
-        result = pipe(
-            prompt_embeds=[pos_emb],
-            negative_prompt_embeds=[neg_emb],
-            height=1024,
-            width=1024,
-            num_inference_steps=28,
-            guidance_scale=2.0,
-            generator=torch.Generator(device=diffusion_device).manual_seed(42),
-            max_sequence_length=512,
-        )
-        image = result.images[0]
-        elapsed = time.time() - t0
+            if backend is not None:
+                from sglang_omni.models.ming_omni.diffusion.backend import (
+                    ImageGenParams,
+                )
 
-        arr = np.array(image)
-        pixel_mean = arr.mean()
-        pixel_std = arr.std()
+                image = backend.generate(
+                    prompt,
+                    ImageGenParams(
+                        width=IMAGE_WIDTH,
+                        height=IMAGE_HEIGHT,
+                        num_inference_steps=28,
+                        guidance_scale=2.0,
+                        seed=42,
+                    ),
+                    condition_embeds=[pos_emb],
+                    negative_condition_embeds=[neg_emb],
+                )
+            else:
+                result = pipe(
+                    prompt_embeds=[pos_emb],
+                    negative_prompt_embeds=[neg_emb],
+                    height=IMAGE_HEIGHT,
+                    width=IMAGE_WIDTH,
+                    num_inference_steps=28,
+                    guidance_scale=2.0,
+                    generator=torch.Generator(device=diffusion_device).manual_seed(42),
+                    max_sequence_length=512,
+                )
+                image = result.images[0]
+            elapsed = time.time() - t0
 
-        safe_name = prompt[:20].replace(" ", "_").replace(",", "").replace("，", "")
-        out_path = os.path.join(OUTPUT_DIR, f"prod_{i}_{safe_name}.png")
-        image.save(out_path)
+            arr = np.array(image)
+            pixel_mean = arr.mean()
+            pixel_std = arr.std()
 
-        logger.info(
-            "  [%d] %dx%d in %.1fs, pixel mean=%.1f std=%.1f → %s",
-            i,
-            image.width,
-            image.height,
-            elapsed,
-            pixel_mean,
-            pixel_std,
-            out_path,
-        )
-        results.append((prompt, pixel_mean, pixel_std, out_path))
+            safe_name = prompt[:20].replace(" ", "_").replace(",", "").replace("，", "")
+            sp_tag = f"_sp{sp_size}" if sp_size > 1 else "_sp1"
+            res_tag = f"_h{IMAGE_HEIGHT}w{IMAGE_WIDTH}"
+            out_path = os.path.join(
+                OUTPUT_DIR, f"prod_{i}{res_tag}{sp_tag}_{safe_name}.png"
+            )
+            image.save(out_path)
 
-    # ==================================================================
-    # Summary
-    # ==================================================================
-    del pipe
-    torch.cuda.empty_cache()
+            logger.info(
+                "  [%d] %dx%d in %.1fs, pixel mean=%.1f std=%.1f → %s",
+                i,
+                image.width,
+                image.height,
+                elapsed,
+                pixel_mean,
+                pixel_std,
+                out_path,
+            )
+            results.append((prompt, pixel_mean, pixel_std, out_path))
+    finally:
+        if backend is not None:
+            try:
+                backend.sp_shutdown()
+            except Exception as exc:
+                logger.warning("backend.sp_shutdown() failed: %s", exc)
+            backend.unload()
+            for proc in sp_followers:
+                proc.join(timeout=30)
+                if proc.is_alive():
+                    logger.warning(
+                        "SP follower pid=%d did not exit cleanly, terminating",
+                        proc.pid,
+                    )
+                    proc.terminate()
+                    proc.join(timeout=5)
+        else:
+            del pipe  # noqa: F821 - bound in baseline branch
+        torch.cuda.empty_cache()
 
     logger.info("=" * 60)
     logger.info("=== FINAL SUMMARY ===")
