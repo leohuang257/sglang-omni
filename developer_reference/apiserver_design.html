@@ -27,22 +27,22 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=90905a2f556bf617f1a9" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=4418a689" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom_log.css?v=731335ad" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom_log.css?v=731335ad" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom_log.css?v=a64801f4" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom_log.css?v=a64801f4" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../_static/scripts/fontawesome.js?digest=90905a2f556bf617f1a9"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9" />
 
-    <script src="../_static/documentation_options.js?v=a1637f0b"></script>
+    <script src="../_static/documentation_options.js?v=23027dbc"></script>
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
@@ -50,27 +50,38 @@
     <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'developer_reference/apiserver_design';</script>
-    <link rel="icon" href="https://docs.sglang.io/_static/logo.ico"/>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <script src="../_static/js/qwen3_omni_server_generator.js?v=d7738e8a"></script>
+    <script src="../_static/js/ming_omni_server_generator.js?v=7979a72f"></script>
+    <link rel="icon" href="../_static/logo.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Pipeline Overview" href="pipeline.html" />
+    <link rel="prev" title="Architecture" href="main.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.1.0" />
-    <meta name="docbuild:last-update" content="May 09, 2026"/>
+  <meta name="docsearch:version" content="0.1.4" />
+    <meta name="docbuild:last-update" content="Sep 02, 2026"/>
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -96,7 +107,51 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
     </header>
   
 
@@ -104,8 +159,6 @@
     <div class="bd-container__inner bd-page-width">
       
       
-      
-        
       
       <dialog id="pst-primary-sidebar-modal"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
@@ -137,8 +190,8 @@
       
     
     
-    <img src="https://docs.sglang.io/_static/logo.png" class="logo__image only-light" alt="SGLang - Home"/>
-    <img src="https://docs.sglang.io/_static/logo.png" class="logo__image only-dark pst-js-only" alt="SGLang - Home"/>
+    <img src="../_static/sgl-omni-logo.svg" class="logo__image only-light" alt="SGLang - Home"/>
+    <img src="../_static/sgl-omni-logo.svg" class="logo__image only-dark pst-js-only" alt="SGLang - Home"/>
   
   
 </a></div>
@@ -153,21 +206,58 @@
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Get Started</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../get_started/installation.html">🚀 Get Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/installation.html">🚀 Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/installation_npu.html">Installation — Ascend NPU</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../get_started/installation_xpu.html">🚀 Installation — Intel XPU</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Basic Usage</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Cookbook</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/higgs_tts.html">Higgs TTS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/voxtral_tts.html">Voxtral TTS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/fishaudio_s2_pro.html">Fish Audio S2-Pro</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/qwen3_tts.html">Qwen3 TTS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/ming_tts.html">Ming-Omni-TTS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/moss_tts.html">MOSS-TTS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/moss_tts_local.html">MOSS-TTS-Local</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/dots_tts.html">dots.tts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/minimax_music3.html">MiniMax Music 3</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/zonos2.html">ZONOS2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/qwen3_asr.html">Qwen3-ASR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/fun_asr.html">Fun-ASR-Nano</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/arkasr.html">ARK-ASR-3B</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/moss_transcribe_diarize.html">MOSS-Transcribe-Diarize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/whisper_asr.html">Whisper ASR</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/qwen3_omni.html">Qwen3-Omni</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/ming_omni.html">Ming-Omni</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cookbook/llada2_uni.html">LLaDA2.0-Uni</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">General Usage</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../basic_usage/qwen3_omni.html">Omni Model Usage</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../basic_usage/tts_s2pro.html">TTS Model Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_usage/audio_translations.html">Audio Translations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_usage/tts.html">TTS Model Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_usage/tts_process_topology.html">TTS Process Topology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_usage/process_topology_migration.html">Process Topology Migration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_usage/omni_router.html">SGLang-Omni Rust Router</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../basic_usage/mps_dp.html">Same-GPU Data Parallelism with CUDA MPS</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Benchmarks</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks/relay.html">Benchmark Relay</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Developer Reference</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture</a></li>
-<li class="toctree-l1"><a class="reference internal" href="relay_design.html">Relay</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="main.html">Architecture</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">API Server Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pipeline.html">Pipeline Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adding_parameters.html">Adding a Parameter</a></li>
+<li class="toctree-l1"><a class="reference internal" href="communication.html">Communication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference_encode_service.html">Reference Encode Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="profiler.html">Request-level profiler</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qwen3_asr_concurrency_profile.html">Qwen3-ASR High-Concurrency Benchmark and Bottleneck Profile</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rl_admin_control.html">RL Admin Control</a></li>
+<li class="toctree-l1"><a class="reference internal" href="bump_version.html">Bumping the SGLang Pin</a></li>
 </ul>
 
     </div>
@@ -227,7 +317,7 @@
       
       
       
-      <li><a href="https://github.com/sgl-project/sgl-project.github.io" target="_blank"
+      <li><a href="https://github.com/sgl-project/sglang-omni" target="_blank"
    class="btn btn-sm btn-source-repository-button dropdown-item"
    title="Source repository"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -244,7 +334,7 @@
       
       
       
-      <li><a href="https://github.com/sgl-project/sgl-project.github.io/blob/main/developer_reference/apiserver_design.md?plain=1" target="_blank"
+      <li><a href="https://github.com/sgl-project/sglang-omni/blob/main/docs/developer_reference/apiserver_design.md?plain=1" target="_blank"
    class="btn btn-sm btn-source-file-button dropdown-item"
    title="Show source"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -261,7 +351,7 @@
       
       
       
-      <li><a href="https://github.com/sgl-project/sgl-project.github.io/edit/main/developer_reference/apiserver_design.md" target="_blank"
+      <li><a href="https://github.com/sgl-project/sglang-omni/edit/main/docs/developer_reference/apiserver_design.md" target="_blank"
    class="btn btn-sm btn-source-edit-button dropdown-item"
    title="Suggest edit"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -278,7 +368,7 @@
       
       
       
-      <li><a href="https://github.com/sgl-project/sgl-project.github.io/issues/new?title=Issue%20on%20page%20%2Fdeveloper_reference/apiserver_design.html&body=Your%20issue%20content%20here." target="_blank"
+      <li><a href="https://github.com/sgl-project/sglang-omni/issues/new?title=Issue%20on%20page%20%2Fdeveloper_reference/apiserver_design.html&body=Your%20issue%20content%20here." target="_blank"
    class="btn btn-sm btn-source-issues-button dropdown-item"
    title="Open an issue"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -361,11 +451,18 @@
 
 
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div>
 
 
 <button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -393,21 +490,21 @@
                 <h2> Contents </h2>
             </div>
             <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
+                <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#role-in-the-system">Role in the System</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-files">Key Files</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-app-vs-launch-server"><code class="docutils literal notranslate"><span class="pre">create_app()</span></code> vs <code class="docutils literal notranslate"><span class="pre">launch_server()</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-app-vs-launch-server"><code class="docutils literal notranslate"><span class="pre">create_app()</span></code> vs <code class="docutils literal notranslate"><span class="pre">launch_server()</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-app-client-model-name"><code class="docutils literal notranslate"><span class="pre">create_app(client,</span> <span class="pre">model_name=...)</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#launch-server-pipeline-config"><code class="docutils literal notranslate"><span class="pre">launch_server(pipeline_config,</span> <span class="pre">...)</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#route-surface">Route Surface</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#request-mapping">Request Mapping</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#request-mapping">Request Mapping</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chat-requests">Chat requests</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conversion-into-generaterequest">Conversion into <code class="docutils literal notranslate"><span class="pre">GenerateRequest</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#response-paths">Response Paths</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#response-paths">Response Paths</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#non-streaming-chat">Non-streaming chat</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#streaming-chat">Streaming chat</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#speech-tts">Speech / TTS</a></li>
@@ -431,8 +528,10 @@
 <section id="role-in-the-system">
 <h2>Role in the System<a class="headerlink" href="#role-in-the-system" title="Link to this heading">#</a></h2>
 <p>The API server is the outer protocol layer on top of the <code class="docutils literal notranslate"><span class="pre">sglang-omni</span></code> pipeline runtime.</p>
-<p>At a high level, the request path is:</p>
+<p>At a high level, the built-in server startup path is:</p>
 <p><code class="docutils literal notranslate"><span class="pre">CLI</span> <span class="pre">/</span> <span class="pre">Python</span> <span class="pre">entrypoint</span></code> → <code class="docutils literal notranslate"><span class="pre">PipelineConfig</span></code> → <code class="docutils literal notranslate"><span class="pre">Pipeline</span> <span class="pre">Startup</span></code> → <code class="docutils literal notranslate"><span class="pre">Coordinator</span></code> → <code class="docutils literal notranslate"><span class="pre">Client</span></code> → <code class="docutils literal notranslate"><span class="pre">FastAPI</span></code></p>
+<p>After startup, the request path is:</p>
+<p><code class="docutils literal notranslate"><span class="pre">HTTP</span> <span class="pre">request</span></code> → <code class="docutils literal notranslate"><span class="pre">FastAPI</span> <span class="pre">route</span></code> → <code class="docutils literal notranslate"><span class="pre">Client</span></code> → <code class="docutils literal notranslate"><span class="pre">Coordinator</span></code> → <code class="docutils literal notranslate"><span class="pre">Stage</span> <span class="pre">pipeline</span></code> → <code class="docutils literal notranslate"><span class="pre">Client</span> <span class="pre">aggregation</span></code> → <code class="docutils literal notranslate"><span class="pre">HTTP/SSE</span> <span class="pre">response</span></code></p>
 <p>That split keeps responsibilities clean:</p>
 <ul class="simple">
 <li><p>the pipeline runtime handles orchestration and execution</p></li>
@@ -492,10 +591,10 @@
 <p>It:</p>
 <ul class="simple">
 <li><p>compiles the pipeline config</p></li>
-<li><p>starts the runner</p></li>
+<li><p>starts the pipeline runtime</p></li>
 <li><p>creates the <code class="docutils literal notranslate"><span class="pre">Client</span></code></p></li>
 <li><p>creates the FastAPI app</p></li>
-<li><p>mounts profiling routes</p></li>
+<li><p>mounts profiling routes on the single-process path</p></li>
 <li><p>runs Uvicorn</p></li>
 <li><p>stops the runtime on shutdown</p></li>
 </ul>
@@ -527,20 +626,44 @@
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">/v1/audio/speech</span></code></p></td>
-<td><p>Text-to-speech</p></td>
+<td><p>Text-to-speech, raw audio response or raw PCM chunks when <code class="docutils literal notranslate"><span class="pre">stream=true</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">/start_profile</span></code></p></td>
-<td><p>Added by the built-in launcher</p></td>
+<td><p>Torch trace + (optional) request-level events. Added by the built-in launcher</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">/stop_profile</span></code></p></td>
-<td><p>Added by the built-in launcher</p></td>
+<td><p>Stops both torch trace and request-level events</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/start_request_profile</span></code></p></td>
+<td><p>Request-level event recorder only (no torch trace)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">POST</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/stop_request_profile</span></code></p></td>
+<td><p>Stops the request-level event recorder</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>The profiling routes are only present when the server is started through <code class="docutils literal notranslate"><span class="pre">launch_server()</span></code>.</p>
+<p>The profiling routes are mounted by the single-process <code class="docutils literal notranslate"><span class="pre">launch_server()</span></code> path. The
+current multi-process launcher path does not mount them.</p>
+<p><code class="docutils literal notranslate"><span class="pre">/start_profile</span></code> accepts:</p>
+<div class="highlight-jsonc notranslate"><div class="highlight"><pre><span></span>{
+  "run_id": "demo-run",
+  "trace_path_template": "/tmp/profiles/demo-run/trace",  // torch trace template
+  "event_dir": "/tmp/profiles/demo-run/events",            // request-event JSONL dir (optional)
+  "enable_torch": true                                     // set false to skip torch trace
+}
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">/stop_profile</span></code> and <code class="docutils literal notranslate"><span class="pre">/stop_request_profile</span></code> both accept an optional
+<code class="docutils literal notranslate"><span class="pre">run_id</span></code>. Omitting it is a wildcard: every stage stops whatever profiler
+session is currently active.</p>
+<p>Request-level events are emitted as JSON lines under
+<code class="docutils literal notranslate"><span class="pre">&lt;event_dir&gt;/events_&lt;stage&gt;_&lt;pid&gt;.jsonl</span></code>. Use <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">sglang_omni.profiler</span> <span class="pre">&lt;event_dir&gt;</span></code> to derive the timeline / stage / hop reports described in
+<code class="docutils literal notranslate"><span class="pre">docs/developer_reference/profiler.md</span></code>.</p>
 </section>
 <section id="request-mapping">
 <h2>Request Mapping<a class="headerlink" href="#request-mapping" title="Link to this heading">#</a></h2>
@@ -563,10 +686,12 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">images</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">audios</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">videos</span></code></p></li>
+<li><p>video processing overrides such as <code class="docutils literal notranslate"><span class="pre">video_fps</span></code> and frame/pixel limits</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">modalities</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">audio</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">stage_sampling</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">stage_params</span></code></p></li>
+<li><p>talker-specific generation overrides</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">request_id</span></code></p></li>
 </ul>
 </section>
@@ -578,10 +703,13 @@
 <li><p>builds <code class="docutils literal notranslate"><span class="pre">SamplingParams</span></code></p></li>
 <li><p>converts chat messages into internal <code class="docutils literal notranslate"><span class="pre">Message</span></code> objects</p></li>
 <li><p>maps per-stage sampling overrides</p></li>
-<li><p>stores media input and audio config in request metadata</p></li>
+<li><p>passes per-stage runtime params through <code class="docutils literal notranslate"><span class="pre">stage_params</span></code></p></li>
+<li><p>stores media input, audio config, and video processing overrides in request metadata</p></li>
+<li><p>stores talker-specific generation overrides in <code class="docutils literal notranslate"><span class="pre">extra_params</span></code></p></li>
 <li><p>copies <code class="docutils literal notranslate"><span class="pre">modalities</span></code> into <code class="docutils literal notranslate"><span class="pre">output_modalities</span></code></p></li>
 </ul>
-<p>From that point on, the runtime works with an internal <code class="docutils literal notranslate"><span class="pre">GenerateRequest</span></code>, not the original OpenAI-style payload.</p>
+<p>The route hands that <code class="docutils literal notranslate"><span class="pre">GenerateRequest</span></code> to <code class="docutils literal notranslate"><span class="pre">Client</span></code>. The client then converts it
+to an <code class="docutils literal notranslate"><span class="pre">OmniRequest</span></code> before submitting it to the coordinator.</p>
 </section>
 </section>
 <section id="response-paths">
@@ -620,7 +748,16 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">task=&quot;tts&quot;</span></code> in metadata</p></li>
 <li><p>TTS-specific parameters stored under <code class="docutils literal notranslate"><span class="pre">tts_params</span></code></p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">Client.speech()</span></code> then collects audio chunks, encodes them, and returns raw audio bytes to the HTTP layer.</p>
+<p>For non-streaming requests, <code class="docutils literal notranslate"><span class="pre">Client.speech()</span></code> collects audio chunks, encodes
+them, and returns raw audio bytes to the HTTP layer.</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">stream=true</span></code>, the route emits <code class="docutils literal notranslate"><span class="pre">audio/pcm</span></code> bytes directly. The HTTP response
+headers are derived from the first audio chunk and subsequent chunks must keep
+the same sample rate. TTS chunk-timing knobs such as
+<code class="docutils literal notranslate"><span class="pre">initial_codec_chunk_frames</span></code> are forwarded as request params only when the
+client provides them, including an explicit <code class="docutils literal notranslate"><span class="pre">0</span></code>, so model schedulers can consume
+them without changing Stage, Coordinator, or Relay. When the field is omitted,
+the speech route leaves it unset and each model applies its own streaming
+default.</p>
 </section>
 </section>
 </section>
@@ -636,6 +773,24 @@
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="main.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Architecture</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="pipeline.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Pipeline Overview</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -653,21 +808,21 @@
     <i class="fa-solid fa-list"></i> Contents
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#role-in-the-system">Role in the System</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-files">Key Files</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-app-vs-launch-server"><code class="docutils literal notranslate"><span class="pre">create_app()</span></code> vs <code class="docutils literal notranslate"><span class="pre">launch_server()</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-app-vs-launch-server"><code class="docutils literal notranslate"><span class="pre">create_app()</span></code> vs <code class="docutils literal notranslate"><span class="pre">launch_server()</span></code></a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-app-client-model-name"><code class="docutils literal notranslate"><span class="pre">create_app(client,</span> <span class="pre">model_name=...)</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#launch-server-pipeline-config"><code class="docutils literal notranslate"><span class="pre">launch_server(pipeline_config,</span> <span class="pre">...)</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#route-surface">Route Surface</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#request-mapping">Request Mapping</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#request-mapping">Request Mapping</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#chat-requests">Chat requests</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#conversion-into-generaterequest">Conversion into <code class="docutils literal notranslate"><span class="pre">GenerateRequest</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#response-paths">Response Paths</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#response-paths">Response Paths</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#non-streaming-chat">Non-streaming chat</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#streaming-chat">Streaming chat</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#speech-tts">Speech / TTS</a></li>
@@ -706,7 +861,7 @@ By SGLang-Omni Team
   
   <div class="footer-item">
     <p class="last-updated">
-  Last updated on May 09, 2026.
+  Last updated on Sep 02, 2026.
   <br/>
 </p>
   </div>
@@ -724,8 +879,8 @@ By SGLang-Omni Team
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=90905a2f556bf617f1a9"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=90905a2f556bf617f1a9"></script>
 
   <footer class="bd-footer">
   </footer>
